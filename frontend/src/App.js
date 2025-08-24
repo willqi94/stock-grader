@@ -2,34 +2,21 @@ import React, { useState } from 'react';
 
 function App() {
   const [symbol, setSymbol] = useState('');
-  const [price, setPrice] = useState(null);
-  const [forward_pe, setPE] = useState(null);
+  const [metrics, setMetrics] = useState(null);
 
-  const getStockPrice = async () => {
+  const getStock = async () => {
     try {
-      const res = await fetch(`/api/stocks/price/${symbol.toUpperCase()}`);
+      const res = await fetch(`/api/stocks/grade/${symbol.toUpperCase()}`);
       if (!res.ok) throw new Error("Stock not found");
       const data = await res.json();
-      setPrice(data.price);
+      setMetrics(data);
     } catch (err) {
       console.error(err);
-      setPrice(null);
+      setMetrics(null);
       alert(err.message);
     }
   };
 
-  const getStockPE = async () => {
-    try {
-      const res = await fetch(`/api/stocks/forward_pe/${symbol.toUpperCase()}`);
-      if (!res.ok) throw new Error("Stock not found");
-      const data = await res.json();
-      setPE(data.forward_pe);
-    } catch (err) {
-      console.error(err);
-      setPE(null);
-      alert(err.message);
-    }
-  };
 
   return (
     <div style={{ padding: "20px" }}>
@@ -39,10 +26,16 @@ function App() {
         onChange={e => setSymbol(e.target.value)} 
         placeholder="Enter stock symbol (AAPL)"
       />
-      <button onClick={getStockPrice}>Get Price</button>
-      <button onClick={getStockPE}>Get PE</button>
-      {price && <p>Price: {price}</p>}
-      {forward_pe && <p>PE: {forward_pe}</p>}
+      <button onClick={getStock}>Get Stock</button>
+      {metrics && (
+        <div>
+          {Object.entries(metrics).map(([key, value]) => (
+            <p key={key}>
+              {key}: {value}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
