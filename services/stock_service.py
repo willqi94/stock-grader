@@ -28,9 +28,11 @@ async def calculate_revenue_growth(ticker):
 async def calculate_assets_to_liabilities(ticker):
     loop = asyncio.get_event_loop()
     balance_sheet = await loop.run_in_executor(None, lambda: ticker.balance_sheet)
-    total_assets = balance_sheet.loc['Total Assets'].iloc[0] if 'Total Assets' in balance_sheet.index else 0
-    total_liabilities = balance_sheet.loc['Total Liab'].iloc[0] if 'Total Liab' in balance_sheet.index else 1
-    return total_assets / total_liabilities if total_liabilities else 0
+    if 'Total Assets' not in balance_sheet.index or 'Total Liab' not in balance_sheet.index:
+        return "N/A"
+    total_assets = balance_sheet.loc['Total Assets'].iloc[0] 
+    total_liabilities = balance_sheet.loc['Total Liab'].iloc[0] 
+    return total_assets / total_liabilities
 
 async def calculate_net_profit_margin(ticker):
     loop = asyncio.get_event_loop()
